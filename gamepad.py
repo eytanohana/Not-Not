@@ -1,23 +1,7 @@
-
-# logitech controller gamepad F310 settings
-logitech_f310_mappings = {
-    'LS_HORIZ': 0, 'LS_VERT': 1, 'TRIGGERS': 2, 'RS_VERT': 3, 'RS_HORIZ': 4,
-    'A': 0, 'B': 1, 'X': 2, 'Y': 3,
-    'LB': 4, 'RB': 5, 'BACK': 6, 'START': 7,
-    'LS_BTN': 8, 'RS_BTN': 9
-}
-
-# hats in pygame
-d_pad_values = {
-    'UP': (0, 1),
-    'DOWN': (0, -1),
-    'LEFT': (-1, 0),
-    'RIGHT': (1, 0)
-}
-
-class GamePad:
+class Gamepad:
 
     def __init__(self, gamepad, settings):
+        gamepad.init()
         self.gamepad = gamepad
         self.settings = dict(settings)
 
@@ -84,4 +68,3 @@ class GamePad:
 
     def dpad_down(self, i=0):
         return self.dpad(i) == (0, -1)
-
