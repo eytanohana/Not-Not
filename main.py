@@ -2,8 +2,7 @@ import pygame
 import json
 import random
 import time
-import threading
-from queue import Queue
+
 import gamepad
 
 
@@ -21,29 +20,31 @@ GREY = (77,) * 3
 RADIUS = 5
 border = 400
 
-moves = ['left', 'right', 'up', 'down']
+directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
 
-def draw_next():
-    move = random.choice(moves)
-    text = font.render(move, True, GREY)
-    text_rect = text.get_rect()
-    text_rect.center = (WIDTH // 2, HEIGHT // 2)
+def handle_direction(direction):
+    pygame.event.get()
 
-    for i in (x / 10 for x in range(63, -1, -1)):
-        screen.fill(BLUE)
-        screen.blit(text, text_rect)
-        pygame.draw.arc(screen, WHITE, timer_border, 0, i, 5)
-        pygame.display.flip()
-        time.sleep(0.015)
+    if direction == 'LEFT':
+        if (logitech_gamepad.is_pressed('X') or logitech_gamepad.left_stick_left()
+            or logitech_gamepad.right_stick_left() or logitech_gamepad.dpad_left()):
+            print('success')
 
-def handle_input(gamepad, inputs):
-    while True:
-        print('handling')
-        print(gamepad.is_pressed('A'))
-        if gamepad.is_pressed('A'):
-            print('putting A')
-            inputs.put('A')
-        time.sleep(.005)
+    elif direction == 'RIGHT':
+        if (logitech_gamepad.is_pressed('B') or logitech_gamepad.left_stick_right()
+            or logitech_gamepad.right_stick_right() or logitech_gamepad.dpad_right()):
+            print('success')
+
+
+    elif direction == 'UP':
+        if (logitech_gamepad.is_pressed('Y') or logitech_gamepad.left_stick_up()
+            or logitech_gamepad.right_stick_up() or logitech_gamepad.dpad_up()):
+            print('success')
+
+    elif direction == 'DOWN':
+        if (logitech_gamepad.is_pressed('A') or logitech_gamepad.left_stick_down()
+            or logitech_gamepad.right_stick_down() or logitech_gamepad.dpad_down()):
+            print('success')
 
 if __name__ == '__main__':
     pygame.init()
@@ -114,23 +115,23 @@ if __name__ == '__main__':
 
         ####################################################################
         #                        Draw the next instruction                 #
-        #
-        #
+        #                                                                  #
+        # Pick a random direction, draw the cicle in the middle,           #
+        # and listen for user input                                        #
         ####################################################################
-        # inputs_queue = Queue()
-        draw_thread = threading.Thread(target=draw_next)
-        # input_thread = threading.Thread(target=handle_input, args=(logitech_gamepad, inputs_queue))
-        draw_thread.start()
-        # input_thread.start()
+        direction = random.choice(directions)
 
-        while draw_thread.is_alive():
-            print('hello')
-            print(logitech_gamepad.is_pressed('A'))
-            # btn = inputs_queue.get()
-            # print(btn)
+        text = font.render(direction, True, GREY)
+        text_rect = text.get_rect()
+        text_rect.center = (WIDTH // 2, HEIGHT // 2)
 
-        
-
+        for i in (x / 10 for x in range(63, -1, -1)):
+            handle_direction(direction)
+            screen.fill(BLUE)
+            screen.blit(text, text_rect)
+            pygame.draw.arc(screen, WHITE, timer_border, 0, i, 5)
+            pygame.display.flip()
+            time.sleep(0.015)
         ####################################################################
 
 
