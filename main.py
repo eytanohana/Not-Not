@@ -7,11 +7,14 @@ import time
 from gamepad import NotNotController
 
 # Define some colors.
-BLACK = (0, 0, 0)
+BLACK = (0,) * 3
 RED = (255, 0, 0)
 BLUE = (12, 133, 127)
-WHITE = (255, 255, 255)
+WHITE = (255,) * 3
 GREY = (77,) * 3
+
+directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
+speed = 0.015
 
 class GameDrawer():
 
@@ -61,22 +64,41 @@ class GameDrawer():
     def display_timer(self, angle, color=WHITE, width=5):
         pygame.draw.arc(self.screen, color, self._timer_bounds, 0, angle, width)
 
-    def display_text(self, text, color=BLACK):
-        self.screen.fill(self._bgcolor)
-
+    def display_text(self, text, color=BLACK, position=None):
         text = self.font.render(text, True, color)
         text_rect = text.get_rect()
-        text_rect.center = (self.width // 2, self.height // 2)
+        if position is None:
+            position = self.width // 2, self.height // 2
+        text_rect.center = position
         self.screen.blit(text, text_rect)
 
+    def ball_in_border(self):
+        return (self.ball_pos[0] > self._timer_bounds.left and self.ball_pos[0] < self._timer_bounds.right
+            and self.ball_pos[1] > self._timer_bounds.top and self.ball_pos[1] < self._timer_bounds.bottom)
 
+
+def float_range(start, stop, step=1):
+    """
+    Helper function since normal python range
+    doesn't support floats.
+    """
+    i = start
+    if start <= stop:
+        while i <= stop:
+            yield i
+            i += step
+    else:
+        while i >= stop:
+            yield i
+            i += step
 
 
 if __name__ == '__main__':
-    drawer = GameDrawer(500, 500, 'Test')
+    # Set up the drawer object
+    drawer = GameDrawer(800, 500, 'NOT NOT')
 
-    running = False
-    continued = False
+    # flags
+    running = True
 
     # Used to manage how fast the screen updates.
     clock = pygame.time.Clock()
@@ -88,27 +110,139 @@ if __name__ == '__main__':
     with open('logitechF310-mappings.json', 'rt') as f:
         gamepad_settings = json.load(f)
 
-    logitech_gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
+    gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
 
     ####################################################################
     #                        Starting Countdown                        #
     ####################################################################
     for count_down in range(3, 0, -1):
-        for angle in (x / 10 for x in range(63, -1, -1)):
+        for angle in float_range(6.3, 0, -1):
+            # Color the screen
             drawer.fill_screen()
-
-            # text = font.render(f'STARTING IN {count_down}', True, GREY)
-            # text_rect = text.get_rect()
-            # text_rect.center = (WIDTH // 2, HEIGHT // 2)
-            # screen.blit
+            # Draw the countdown
             drawer.display_text(f'STARTING IN {count_down}', GREY)
-
-            # pygame.draw.arc(screen, WHITE, timer_border, 0, angle, 5)
-            # pygame.display.flip()
+            # Draw the circular timer
             drawer.display_timer(angle)
-
+            # Flip
             drawer.refresh()
-
+            # 60 fps
             clock.tick(60)
     ###################################################################
 
+    # ---------- Main Program Loop ------------
+    while running:
+        time.sleep(0.1)
+
+        # User did something.
+        for event in pygame.event.get():
+            # If user clicked close.
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Choose a random direction either up right left or down
+        target_direction = random.choice(directions)
+
+        prev_input_direction = None
+
+        for angle in float_range(6.3, 0, -1):
+
+            # display the information
+            drawer.fill_screen()
+            drawer.display_text(target_direction, GREY)
+
+            # draw the ball in the proper place
+            drawer.display_ball()
+
+            # makes it easier to get controller input
+            pygame.event.get()
+            # capture the controller input
+            input_direction = gamepad.direction_input()
+
+            # Initialize the previous input
+            # We need prev_input_direction otherwise
+            # input_direction is None most of the time.
+            # prev_ lets the ball continue to update after
+            # choosing a direction.
+            #
+            # Need to update later to be able to correct a wrong move in time.
+            # But for now it works good enough.
+            if prev_input_direction is None:
+                prev_input_direction = input_direction
+            else:
+                input_direction = prev_input_direction
+
+            # get the input
+            if input_direction is not None:
+                # update the balls position
+                if input_direction == 'LEFT':
+                    drawer.ball_pos[0] -= 10
+
+                elif input_direction == 'RIGHT':
+                    drawer.ball_pos[0] += 10
+
+                elif input_direction == 'UP':
+                    drawer.ball_pos[1] -= 10
+
+                else:
+                    drawer.ball_pos[1] += 10
+                #####################################
+
+            # If the ball reached the end.
+            if not drawer.ball_in_border():
+
+                # The player chose correct.
+                if input_direction == target_direction:
+                    print('SUCCESS')
+                    # Leave the for; go on to the next turn.
+                    break
+
+                # The player chose wrong.
+                else:
+                    print('FAIL')
+                    drawer.bgcolor = RED
+                    drawer.fill_screen()
+
+                    drawer.display_text("You chose wrong!")
+                    drawer.refresh()
+                    time.sleep(0.3)
+                    # end the game
+                    running = False
+                    break
+
+            # The ball didn't reach the end.
+            # The player was too slow.
+            else:
+                if angle == 0:
+                    print('FAIL')
+                    drawer.bgcolor = RED
+                    drawer.fill_screen()
+
+                    drawer.display_text('Out of Time! You were too slow.')
+                    # pygame.display.flip(
+                    drawer.refresh()
+                    time.sleep(3)
+                    done = True
+                    break
+            ###########################################
+            # pygame.draw.arc(screen, WHITE, timer_border, 0, angle, 5)
+            drawer.display_timer(angle)
+
+            # pygame.display.flip()
+            drawer.refresh()
+            time.sleep(speed)
+        ####################################################################
+
+        #
+        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
+        #
+
+        # Go ahead and update the screen with what we've drawn.
+        pygame.display.flip()
+
+        # Limit to 20 frames per second.
+        clock.tick(20)
+
+    # Close the window and quit.
+    # If you forget this line, the program will 'hang'
+    # on exit if running from IDLE.
+    pygame.quit()

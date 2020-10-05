@@ -22,8 +22,8 @@ directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
 timer_radius = 400
 timer_border = pygame.Rect((WIDTH - timer_radius) // 2, (HEIGHT - timer_radius) // 2, timer_radius, timer_radius)
 
-failure_message = 'YOU FUCKING FAILED DIPSHIT'
-success_message = 'CongratuFUCKINGlations'
+failure_message = 'You Failed :('
+success_message = 'Congratulations'
 
 speed = 0.015
 
