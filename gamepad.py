@@ -87,3 +87,19 @@ class NotNotController(Gamepad):
     def down(self):
         return (self.dpad_down() or self.left_stick_down() or
                 self.right_stick_down() or self.is_pressed('A'))
+
+    def direction_input(self):
+        if self.left():
+            return 'LEFT'
+
+        elif self.right():
+            return 'RIGHT'
+
+        elif self.up():
+            return 'UP'
+
+        elif self.down():
+            return 'DOWN'
+
+        else:
+            return None
