@@ -89,13 +89,11 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:  # If user clicked close.
                 done = True  # Flag that we are done so we exit this loop.
 
-        # pick a direction and draw the screen
-
         ####################################################################
         #                        Draw the next instruction                 #
         #                                                                  #
         # Pick a random direction, draw the circle in the middle,          #
-        # and listen for user input                                        #
+        #    and listen for user input                                     #
         ####################################################################
         direction = random.choice(directions)
 

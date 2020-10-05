@@ -14,7 +14,7 @@ WHITE = (255,) * 3
 GREY = (77,) * 3
 
 directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
-speed = 0.015
+speed = 0.016
 
 class GameDrawer():
 
@@ -54,11 +54,7 @@ class GameDrawer():
     def fill_screen(self):
         self.screen.fill(self._bgcolor)
 
-    def display_ball(self, position=None, color=WHITE, radius=5):
-        if position is None:
-            position = (self.width // 2, self.height // 2)
-        self.ball_pos = position
-
+    def display_ball(self, position, color=WHITE, radius=5):
         pygame.draw.circle(self.screen, color, position, radius)
 
     def display_timer(self, angle, color=WHITE, width=5):
@@ -68,29 +64,15 @@ class GameDrawer():
         text = self.font.render(text, True, color)
         text_rect = text.get_rect()
         if position is None:
-            position = self.width // 2, self.height // 2
+            position = [self.width // 2, self.height // 2]
         text_rect.center = position
         self.screen.blit(text, text_rect)
 
-    def ball_in_border(self):
-        return (self.ball_pos[0] > self._timer_bounds.left and self.ball_pos[0] < self._timer_bounds.right
-            and self.ball_pos[1] > self._timer_bounds.top and self.ball_pos[1] < self._timer_bounds.bottom)
+    def ball_in_border(self, ball_pos):
+        return (self._timer_bounds.left < ball_pos[0] < self._timer_bounds.right
+                and self._timer_bounds.top < ball_pos[1] < self._timer_bounds.bottom)
 
 
-def float_range(start, stop, step=1):
-    """
-    Helper function since normal python range
-    doesn't support floats.
-    """
-    i = start
-    if start <= stop:
-        while i <= stop:
-            yield i
-            i += step
-    else:
-        while i >= stop:
-            yield i
-            i += step
 
 
 if __name__ == '__main__':
@@ -116,7 +98,8 @@ if __name__ == '__main__':
     #                        Starting Countdown                        #
     ####################################################################
     for count_down in range(3, 0, -1):
-        for angle in float_range(6.3, 0, -1):
+        # in radians 2pi, pi, 0
+        for angle in (a / 10 for a in range(63, -1, -1)):
             # Color the screen
             drawer.fill_screen()
             # Draw the countdown
@@ -143,20 +126,26 @@ if __name__ == '__main__':
         target_direction = random.choice(directions)
 
         prev_input_direction = None
+        ball_pos = [drawer.width // 2, drawer.height // 2]
 
-        for angle in float_range(6.3, 0, -1):
+        for angle in (a / 10 for a in range(63, -1, -1)):
+            time.sleep(speed)
 
             # display the information
             drawer.fill_screen()
             drawer.display_text(target_direction, GREY)
 
             # draw the ball in the proper place
-            drawer.display_ball()
+            drawer.display_ball(ball_pos)
+
+            drawer.display_timer(angle)
+            drawer.refresh()
 
             # makes it easier to get controller input
             pygame.event.get()
             # capture the controller input
             input_direction = gamepad.direction_input()
+            print(input_direction)
 
             # Initialize the previous input
             # We need prev_input_direction otherwise
@@ -175,30 +164,28 @@ if __name__ == '__main__':
             if input_direction is not None:
                 # update the balls position
                 if input_direction == 'LEFT':
-                    drawer.ball_pos[0] -= 10
+                    ball_pos[0] -= 10
 
                 elif input_direction == 'RIGHT':
-                    drawer.ball_pos[0] += 10
+                    ball_pos[0] += 10
 
                 elif input_direction == 'UP':
-                    drawer.ball_pos[1] -= 10
+                    ball_pos[1] -= 10
 
                 else:
-                    drawer.ball_pos[1] += 10
+                    ball_pos[1] += 10
                 #####################################
 
             # If the ball reached the end.
-            if not drawer.ball_in_border():
+            if not drawer.ball_in_border(ball_pos):
 
                 # The player chose correct.
                 if input_direction == target_direction:
-                    print('SUCCESS')
                     # Leave the for; go on to the next turn.
                     break
 
                 # The player chose wrong.
                 else:
-                    print('FAIL')
                     drawer.bgcolor = RED
                     drawer.fill_screen()
 
@@ -209,36 +196,21 @@ if __name__ == '__main__':
                     running = False
                     break
 
+        else:
             # The ball didn't reach the end.
             # The player was too slow.
-            else:
-                if angle == 0:
-                    print('FAIL')
-                    drawer.bgcolor = RED
-                    drawer.fill_screen()
+            drawer.bgcolor = RED
+            drawer.fill_screen()
 
-                    drawer.display_text('Out of Time! You were too slow.')
-                    # pygame.display.flip(
-                    drawer.refresh()
-                    time.sleep(3)
-                    done = True
-                    break
-            ###########################################
-            # pygame.draw.arc(screen, WHITE, timer_border, 0, angle, 5)
-            drawer.display_timer(angle)
-
-            # pygame.display.flip()
+            drawer.display_text('Out of Time! You were too slow.')
             drawer.refresh()
-            time.sleep(speed)
-        ####################################################################
 
-        #
-        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
-        #
+            time.sleep(1)
+            running = False
+            break
 
-        # Go ahead and update the screen with what we've drawn.
-        pygame.display.flip()
 
+        drawer.refresh()
         # Limit to 20 frames per second.
         clock.tick(20)
 
