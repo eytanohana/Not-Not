@@ -68,3 +68,22 @@ class Gamepad:
 
     def dpad_down(self, i=0):
         return self.dpad(i) == (0, -1)
+
+
+class NotNotController(Gamepad):
+
+    def left(self):
+        return (self.dpad_left() or self.left_stick_left() or
+                self.right_stick_left() or self.is_pressed('X'))
+
+    def right(self):
+        return (self.dpad_right() or self.left_stick_right() or
+                self.right_stick_right() or self.is_pressed('B'))
+
+    def up(self):
+        return (self.dpad_up() or self.left_stick_up() or
+                self.right_stick_up() or self.is_pressed('Y'))
+
+    def down(self):
+        return (self.dpad_down() or self.left_stick_down() or
+                self.right_stick_down() or self.is_pressed('A'))
