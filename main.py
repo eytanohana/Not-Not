@@ -76,3 +76,39 @@ if __name__ == '__main__':
     drawer = GameDrawer(500, 500, 'Test')
 
     running = False
+    continued = False
+
+    # Used to manage how fast the screen updates.
+    clock = pygame.time.Clock()
+
+    # Initialize the joysticks.
+    pygame.joystick.init()
+
+    # Gamepad settings
+    with open('logitechF310-mappings.json', 'rt') as f:
+        gamepad_settings = json.load(f)
+
+    logitech_gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
+
+    ####################################################################
+    #                        Starting Countdown                        #
+    ####################################################################
+    for count_down in range(3, 0, -1):
+        for angle in (x / 10 for x in range(63, -1, -1)):
+            drawer.fill_screen()
+
+            # text = font.render(f'STARTING IN {count_down}', True, GREY)
+            # text_rect = text.get_rect()
+            # text_rect.center = (WIDTH // 2, HEIGHT // 2)
+            # screen.blit
+            drawer.display_text(f'STARTING IN {count_down}', GREY)
+
+            # pygame.draw.arc(screen, WHITE, timer_border, 0, angle, 5)
+            # pygame.display.flip()
+            drawer.display_timer(angle)
+
+            drawer.refresh()
+
+            clock.tick(60)
+    ###################################################################
+
