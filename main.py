@@ -12,6 +12,7 @@ RED = (255, 0, 0)
 BLUE = (12, 133, 127)
 WHITE = (255,) * 3
 GREY = (77,) * 3
+GREEN = (11, 212, 51)
 
 directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
 speed = 0.016
@@ -114,104 +115,140 @@ if __name__ == '__main__':
 
     # ---------- Main Program Loop ------------
     while running:
-        time.sleep(0.1)
 
-        # User did something.
-        for event in pygame.event.get():
-            # If user clicked close.
-            if event.type == pygame.QUIT:
-                running = False
+        lost = False
+        # Each game is 20 rounds long.
+        for round in range(10, -1, -1):
+            time.sleep(0.1)
+            if lost:
+                break
 
-        # Choose a random direction either up right left or down
-        target_direction = random.choice(directions)
-
-        prev_input_direction = None
-        ball_pos = [drawer.width // 2, drawer.height // 2]
-
-        for angle in (a / 10 for a in range(63, -1, -1)):
-            time.sleep(speed)
-
-            # display the information
-            drawer.fill_screen()
-            drawer.display_text(target_direction, GREY)
-
-            # draw the ball in the proper place
-            drawer.display_ball(ball_pos)
-
-            drawer.display_timer(angle)
-            drawer.refresh()
-
-            # makes it easier to get controller input
-            pygame.event.get()
-            # capture the controller input
-            input_direction = gamepad.direction_input()
-            print(input_direction)
-
-            # Initialize the previous input
-            # We need prev_input_direction otherwise
-            # input_direction is None most of the time.
-            # prev_ lets the ball continue to update after
-            # choosing a direction.
-            #
-            # Need to update later to be able to correct a wrong move in time.
-            # But for now it works good enough.
-            if prev_input_direction is None:
-                prev_input_direction = input_direction
-            else:
-                input_direction = prev_input_direction
-
-            # get the input
-            if input_direction is not None:
-                # update the balls position
-                if input_direction == 'LEFT':
-                    ball_pos[0] -= 10
-
-                elif input_direction == 'RIGHT':
-                    ball_pos[0] += 10
-
-                elif input_direction == 'UP':
-                    ball_pos[1] -= 10
-
-                else:
-                    ball_pos[1] += 10
-                #####################################
-
-            # If the ball reached the end.
-            if not drawer.ball_in_border(ball_pos):
-
-                # The player chose correct.
-                if input_direction == target_direction:
-                    # Leave the for; go on to the next turn.
-                    break
-
-                # The player chose wrong.
-                else:
-                    drawer.bgcolor = RED
-                    drawer.fill_screen()
-
-                    drawer.display_text("You chose wrong!")
-                    drawer.refresh()
-                    time.sleep(0.3)
-                    # end the game
+            # User did something.
+            for event in pygame.event.get():
+                # If user clicked close.
+                if event.type == pygame.QUIT:
                     running = False
-                    break
 
-        else:
+            # Choose a random direction either up right left or down
+            target_direction = random.choice(directions)
+
+            prev_input_direction = None
+            ball_pos = [drawer.width // 2, drawer.height // 2]
+
+            drawer.bgcolor = BLUE
+
+            for angle in (a / 10 for a in range(63, -1, -1)):
+                time.sleep(speed)
+
+                # display the information
+                drawer.fill_screen()
+                drawer.display_text(target_direction, GREY)
+
+                drawer.display_text(f'{round}', position=(drawer.width - 50, 50))
+
+
+                # draw the ball in the proper place
+                drawer.display_ball(ball_pos)
+
+                drawer.display_timer(angle)
+                drawer.refresh()
+
+                # makes it easier to get controller input
+                pygame.event.get()
+                # capture the controller input
+                input_direction = gamepad.direction_input()
+                print(input_direction)
+
+                # Initialize the previous input
+                # We need prev_input_direction otherwise
+                # input_direction is None most of the time.
+                # prev_ lets the ball continue to update after
+                # choosing a direction.
+                #
+                # Need to update later to be able to correct a wrong move in time.
+                # But for now it works good enough.
+                if prev_input_direction is None:
+                    prev_input_direction = input_direction
+                else:
+                    input_direction = prev_input_direction
+
+                # get the input
+                if input_direction is not None:
+                    # update the balls position
+                    if input_direction == 'LEFT':
+                        ball_pos[0] -= 10
+
+                    elif input_direction == 'RIGHT':
+                        ball_pos[0] += 10
+
+                    elif input_direction == 'UP':
+                        ball_pos[1] -= 10
+
+                    else:
+                        ball_pos[1] += 10
+
+                # If the ball reached the end.
+                if not drawer.ball_in_border(ball_pos):
+
+                    # The player chose correct.
+                    if input_direction == target_direction:
+                        # Leave the for; go on to the next turn.
+                        break
+
+                    # The player chose wrong.
+                    else:
+                        drawer.bgcolor = RED
+                        drawer.fill_screen()
+
+                        drawer.display_text("You chose wrong!")
+                        drawer.refresh()
+                        time.sleep(0.3)
+                        # end the game
+                        lost = True
+                        running = False
+                        break
+
             # The ball didn't reach the end.
             # The player was too slow.
-            drawer.bgcolor = RED
+            else:
+
+                drawer.bgcolor = RED
+                drawer.fill_screen()
+
+                drawer.display_text('Out of Time! You were too slow.')
+                drawer.refresh()
+
+                time.sleep(1)
+                # play again
+                drawer.fill_screen()
+                drawer.display_text('Play Again?')
+                drawer.display_text('<- ok       no thanks->', position=(drawer.width//2 , drawer.height//2+50))
+                drawer.refresh()
+                # time.sleep(1)
+                while (input_direction := gamepad.direction_input()) is None:
+                    pygame.event.get()
+
+                if input_direction == 'LEFT':
+                    print('CONTINUING')
+                    time.sleep(1)
+                    break
+
+                running = False
+                break
+
+        # The player completed the round successfully.
+        else:
+            drawer.bgcolor = GREEN
             drawer.fill_screen()
-
-            drawer.display_text('Out of Time! You were too slow.')
+            drawer.display_text('Congratulations', WHITE)
             drawer.refresh()
-
-            time.sleep(1)
+            time.sleep(2)
             running = False
-            break
+
 
 
         drawer.refresh()
-        # Limit to 20 frames per second.
+             # Limit to 20 frames per second.
         clock.tick(20)
 
     # Close the window and quit.
