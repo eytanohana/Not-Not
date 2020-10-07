@@ -203,10 +203,6 @@ if __name__ == '__main__':
     drawer = GameDrawer(800, 500, 'NOT NOT')
     icon = pygame.image.load('exclamation-mark.png')
     pygame.display.set_icon(icon)
-
-    # Set up the direction object
-
-
     # flags
     running = True
 
