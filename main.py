@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
         lost = False
         # Each game is 20 rounds long.
-        for round in range(20, 0, -1):
+        for round in range(10, 0, -1):
             time.sleep(0.1)
             if lost:
                 drawer.display_try_again()
