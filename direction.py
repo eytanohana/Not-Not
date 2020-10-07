@@ -7,7 +7,7 @@ class Direction:
 
     def __init__(self, difficulty=0):
         self.difficulty = difficulty
-        self.direction = None
+        self.target_direction = None
 
     def pick_direction(self):
         self.num_nots = random.randint(0, self.difficulty)

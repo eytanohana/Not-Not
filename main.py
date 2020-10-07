@@ -4,6 +4,7 @@ import random
 import time
 
 from gamepad import NotNotController
+from direction import Direction
 
 # Define some colors.
 BLACK = (0,) * 3
@@ -13,8 +14,9 @@ WHITE = (255,) * 3
 GREY = (77,) * 3
 GREEN = (11, 212, 51)
 
-directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
-speed = 0.016
+# directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
+speed = 0.015
+ball_speed = 13
 
 class GameDrawer():
 
@@ -82,8 +84,14 @@ class GameDrawer():
 
 
 if __name__ == '__main__':
+    print('Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
     # Set up the drawer object
     drawer = GameDrawer(800, 500, 'NOT NOT')
+    icon = pygame.image.load('exclamation-mark.png')
+    pygame.display.set_icon(icon)
+
+    # Set up the direction object
+    directions = Direction(difficulty=2)
 
     # flags
     running = True
@@ -123,9 +131,21 @@ if __name__ == '__main__':
 
         lost = False
         # Each game is 20 rounds long.
-        for round in range(10, 0, -1):
+        for round in range(20, 0, -1):
             time.sleep(0.1)
             if lost:
+                drawer.display_try_again()
+
+                input_direction = None
+                while (input_direction := gamepad.direction_input()) is None:
+                    pygame.event.get()
+
+                if input_direction == 'LEFT':
+                    print('CONTINUING')
+                else:
+                    running = False
+
+                time.sleep(1)
                 break
 
             # User did something.
@@ -135,7 +155,8 @@ if __name__ == '__main__':
                     running = False
 
             # Choose a random direction either up right left or down
-            target_direction = random.choice(directions)
+            # target_direction = random.choice(directions)
+            directions.pick_direction()
 
             prev_input_direction = None
             ball_pos = [drawer.width // 2, drawer.height // 2]
@@ -147,7 +168,7 @@ if __name__ == '__main__':
 
                 # display the information
                 drawer.fill_screen()
-                drawer.display_text(target_direction, GREY)
+                drawer.display_text(directions.target_direction, GREY)
 
                 drawer.display_text(f'{round}', position=(drawer.width - 50, 50))
 
@@ -162,7 +183,6 @@ if __name__ == '__main__':
                 pygame.event.get()
                 # capture the controller input
                 input_direction = gamepad.direction_input()
-                print(input_direction)
 
                 # Initialize the previous input
                 # We need prev_input_direction otherwise
@@ -181,22 +201,23 @@ if __name__ == '__main__':
                 if input_direction is not None:
                     # update the balls position
                     if input_direction == 'LEFT':
-                        ball_pos[0] -= 10
+                        ball_pos[0] -= ball_speed
 
                     elif input_direction == 'RIGHT':
-                        ball_pos[0] += 10
+                        ball_pos[0] += ball_speed
 
                     elif input_direction == 'UP':
-                        ball_pos[1] -= 10
+                        ball_pos[1] -= ball_speed
 
                     else:
-                        ball_pos[1] += 10
+                        ball_pos[1] += ball_speed
 
                 # If the ball reached the end.
                 if not drawer.ball_in_border(ball_pos):
 
                     # The player chose correct.
-                    if input_direction == target_direction:
+                    # if input_direction == target_direction:
+                    if directions.correct_direction(input_direction):
                         # Leave the for; go on to the next turn.
                         break
 
@@ -210,7 +231,6 @@ if __name__ == '__main__':
                         time.sleep(0.3)
                         # end the game
                         lost = True
-                        running = False
                         break
 
             # The ball didn't reach the end.
