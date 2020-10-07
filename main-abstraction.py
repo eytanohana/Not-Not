@@ -197,10 +197,6 @@ def play_game(difficulty):
         time.sleep(2)
         return True
 
-    drawer.refresh()
-    # Limit to 20 frames per second.
-    clock.tick(20)
-
 
 
 if __name__ == '__main__':
