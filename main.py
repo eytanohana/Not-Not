@@ -3,7 +3,6 @@ import json
 import random
 import time
 
-# from numpy import arange
 from gamepad import NotNotController
 
 # Define some colors.
@@ -69,6 +68,12 @@ class GameDrawer():
         text_rect.center = position
         self.screen.blit(text, text_rect)
 
+    def display_try_again(self):
+        self.fill_screen()
+        self.display_text('Play Again?')
+        self.display_text('<- ok       no thanks->', position=(self.width // 2, self.height // 2 + 50))
+        self.refresh()
+
     def ball_in_border(self, ball_pos):
         return (self._timer_bounds.left < ball_pos[0] < self._timer_bounds.right
                 and self._timer_bounds.top < ball_pos[1] < self._timer_bounds.bottom)
@@ -118,7 +123,7 @@ if __name__ == '__main__':
 
         lost = False
         # Each game is 20 rounds long.
-        for round in range(10, -1, -1):
+        for round in range(10, 0, -1):
             time.sleep(0.1)
             if lost:
                 break
@@ -220,11 +225,13 @@ if __name__ == '__main__':
 
                 time.sleep(1)
                 # play again
-                drawer.fill_screen()
-                drawer.display_text('Play Again?')
-                drawer.display_text('<- ok       no thanks->', position=(drawer.width//2 , drawer.height//2+50))
-                drawer.refresh()
+                # drawer.fill_screen()
+                # drawer.display_text('Play Again?')
+                # drawer.display_text('<- ok       no thanks->', position=(drawer.width//2 , drawer.height//2+50))
+                # drawer.refresh()
                 # time.sleep(1)
+                drawer.display_try_again()
+
                 while (input_direction := gamepad.direction_input()) is None:
                     pygame.event.get()
 
