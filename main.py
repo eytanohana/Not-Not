@@ -75,6 +75,13 @@ class GameDrawer():
         self.display_text('<- ok       no thanks->', position=(self.width // 2, self.height // 2 + 50))
         self.refresh()
 
+
+    def display_lose(self):
+        self.fill_screen()
+        self.display_text('YOU LOST')
+        self.refresh()
+
+
     def display_lives(self, lives):
         for i in range(lives):
             pygame.draw.circle(self.screen, WHITE, (30*(i+1),30), 10)

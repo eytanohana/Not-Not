@@ -46,8 +46,8 @@ def play_game(difficulty):
     # ---------- Main Program Loop ------------
     lost = False
     # Each game is 20 rounds long.
-    round = 10
-    while round > 0:
+    turn = 10
+    while turn > 0:
         time.sleep(0.1)
         if lost:
             if lives > 0:
@@ -59,26 +59,24 @@ def play_game(difficulty):
 
                 if input_direction == 'LEFT':
                     lives -= 1
-                    print('Use a life')
                     lost = False
                     time.sleep(0.5)
 
                 else:
                     print('round lost')
-                    break
+                    return False
 
             else:
                 drawer.bgcolor = ORANGE
-                drawer.fill_screen()
-                drawer.display_text('YOU LOST')
-                drawer.refresh()
-                break
+                drawer.display_lose()
+                time.sleep(1)
+                return False
 
         # User did something.
         for event in pygame.event.get():
             # If user clicked close.
             if event.type == pygame.QUIT:
-                running = False
+                pass
 
         # Choose a random direction either up right left or down
         # target_direction = random.choice(directions)
@@ -96,7 +94,7 @@ def play_game(difficulty):
             drawer.fill_screen()
             drawer.display_text(directions.target_direction, GREY)
 
-            drawer.display_text(f'{round}', position=(drawer.width - 50, 50))
+            drawer.display_text(f'{turn}', position=(drawer.width - 50, 50))
 
             # draw the ball in the proper place
             drawer.display_ball(ball_pos)
@@ -141,10 +139,9 @@ def play_game(difficulty):
             if not drawer.ball_in_border(ball_pos):
 
                 # The player chose correct.
-                # if input_direction == target_direction:
                 if directions.correct_direction(input_direction):
                     # Leave the for; go on to the next turn.
-                    round -= 1
+                    turn -= 1
                     break
 
                 # The player chose wrong.
@@ -169,28 +166,26 @@ def play_game(difficulty):
             drawer.display_text('Out of Time! You were too slow.')
             drawer.display_lives(lives)
             drawer.refresh()
-
             time.sleep(1)
-            # play again
-            # drawer.fill_screen()
-            # drawer.display_text('Play Again?')
-            # drawer.display_text('<- ok       no thanks->', position=(drawer.width//2 , drawer.height//2+50))
-            # drawer.refresh()
-            # time.sleep(1)
-            drawer.display_option('use a life and continue?')
-            drawer.display_lives(lives)
-            drawer.refresh()
+            if lives > 0:
+                drawer.display_option('use a life and continue?')
+                drawer.display_lives(lives)
+                drawer.refresh()
 
-            while (input_direction := gamepad.direction_input()) is None:
-                pygame.event.get()
+                while (input_direction := gamepad.direction_input()) is None:
+                    pygame.event.get()
 
-            time.sleep(0.5)
+                time.sleep(0.5)
 
-            if input_direction == 'LEFT':
-                print('use a life')
-                lives -= 1
+                if input_direction == 'LEFT':
+                    lives -= 1
+                    time.sleep(1)
+
+            else:
+                drawer.bgcolor = ORANGE
+                drawer.display_lose()
                 time.sleep(1)
-                # break
+                return False
 
 
     # The player completed the round successfully.
@@ -200,6 +195,7 @@ def play_game(difficulty):
         drawer.display_text('Congratulations', WHITE)
         drawer.refresh()
         time.sleep(2)
+        return True
 
     drawer.refresh()
     # Limit to 20 frames per second.
@@ -230,4 +226,4 @@ if __name__ == '__main__':
 
     gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
 
-    play_game(2)
+    print(play_game(2))
