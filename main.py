@@ -14,9 +14,8 @@ WHITE = (255,) * 3
 GREY = (77,) * 3
 GREEN = (11, 212, 51)
 
-# directions = ['LEFT', 'RIGHT', 'UP', 'DOWN']
 speed = 0.015
-ball_speed = 13
+ball_speed = 14
 
 class GameDrawer():
 
@@ -79,8 +78,6 @@ class GameDrawer():
     def ball_in_border(self, ball_pos):
         return (self._timer_bounds.left < ball_pos[0] < self._timer_bounds.right
                 and self._timer_bounds.top < ball_pos[1] < self._timer_bounds.bottom)
-
-
 
 
 if __name__ == '__main__':
