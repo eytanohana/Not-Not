@@ -13,7 +13,7 @@ BLUE = (12, 133, 127)
 WHITE = (255,) * 3
 GREY = (77,) * 3
 GREEN = (11, 212, 51)
-
+ORANGE = (230, 163, 48)
 speed = 0.015
 ball_speed = 14
 
@@ -69,11 +69,19 @@ class GameDrawer():
         text_rect.center = position
         self.screen.blit(text, text_rect)
 
-    def display_try_again(self):
+    def display_option(self, text):
         self.fill_screen()
-        self.display_text('Play Again?')
+        self.display_text(text)
         self.display_text('<- ok       no thanks->', position=(self.width // 2, self.height // 2 + 50))
         self.refresh()
+
+    def display_lives(self, lives):
+        for i in range(lives):
+            pygame.draw.circle(self.screen, WHITE, (30*(i+1),30), 10)
+
+
+
+
 
     def ball_in_border(self, ball_pos):
         return (self._timer_bounds.left < ball_pos[0] < self._timer_bounds.right
@@ -131,7 +139,7 @@ if __name__ == '__main__':
         for round in range(10, 0, -1):
             time.sleep(0.1)
             if lost:
-                drawer.display_try_again()
+                drawer.display_option('play again?')
 
                 input_direction = None
                 while (input_direction := gamepad.direction_input()) is None:
@@ -241,13 +249,7 @@ if __name__ == '__main__':
                 drawer.refresh()
 
                 time.sleep(1)
-                # play again
-                # drawer.fill_screen()
-                # drawer.display_text('Play Again?')
-                # drawer.display_text('<- ok       no thanks->', position=(drawer.width//2 , drawer.height//2+50))
-                # drawer.refresh()
-                # time.sleep(1)
-                drawer.display_try_again()
+                drawer.display_option('play again?')
 
                 while (input_direction := gamepad.direction_input()) is None:
                     pygame.event.get()
