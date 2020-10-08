@@ -10,7 +10,7 @@ class Direction:
         self.target_direction = None
 
     def pick_direction(self):
-        self.num_nots = random.randint(0, self.difficulty)
+        self.num_nots = random.randint(0, self.difficulty) % 4
         nots = 'NOT ' * self.num_nots
         direction = random.choice(list(simple_directions))
         self.target_direction = nots + direction

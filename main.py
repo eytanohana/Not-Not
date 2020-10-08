@@ -1,7 +1,7 @@
 import pygame
 import json
-import random
 import time
+import os
 
 from gamepad import NotNotController
 from direction import Direction
@@ -14,10 +14,12 @@ WHITE = (255,) * 3
 GREY = (77,) * 3
 GREEN = (11, 212, 51)
 ORANGE = (230, 163, 48)
+
 speed = 0.015
 ball_speed = 14
 
-class GameDrawer():
+
+class GameDrawer:
 
     def __init__(self, width, height, caption, font_name=None, font_size=60):
         self.width = width
@@ -61,34 +63,57 @@ class GameDrawer():
     def display_timer(self, angle, color=WHITE, width=5):
         pygame.draw.arc(self.screen, color, self._timer_bounds, 0, angle, width)
 
-    def display_text(self, text, color=BLACK, position=None):
+    def display_text(self, text, color=BLACK, offset_x=0, offset_y=0):
         text = self.font.render(text, True, color)
         text_rect = text.get_rect()
-        if position is None:
-            position = [self.width // 2, self.height // 2]
+
+        position = [self.width // 2 + offset_x, self.height // 2 + offset_y]
         text_rect.center = position
         self.screen.blit(text, text_rect)
 
     def display_option(self, text):
         self.fill_screen()
         self.display_text(text)
-        self.display_text('<- ok       no thanks->', position=(self.width // 2, self.height // 2 + 50))
+        self.display_text('<- ok       no thanks->', offset_y=50)
         self.refresh()
-
 
     def display_lose(self):
         self.fill_screen()
         self.display_text('YOU LOST')
         self.refresh()
 
-
     def display_lives(self, lives):
         for i in range(lives):
-            pygame.draw.circle(self.screen, WHITE, (30*(i+1),30), 10)
+            pygame.draw.circle(self.screen, WHITE, (30 * (i + 1), 30), 10)
 
     def ball_in_border(self, ball_pos):
         return (self._timer_bounds.left < ball_pos[0] < self._timer_bounds.right
                 and self._timer_bounds.top < ball_pos[1] < self._timer_bounds.bottom)
+
+
+    def display_round(self, round, offset=0):
+        self.fill_screen()
+        length = 250
+        rect = pygame.Rect((self.width - length)//2 + offset, (self.height - length)//2, length, length)
+        pygame.draw.rect(self.screen, BLACK, rect)
+
+        self.display_text(f'ROUND {round}', WHITE, offset_x=offset)
+
+    def shake_round(self, round):
+        shake_weight = 20
+        for i in range(3):
+            for offset in range(shake_weight):
+                self.display_round(round, offset)
+                self.refresh()
+
+            for offset in range(shake_weight, -shake_weight, -1):
+                self.display_round(round, offset)
+                self.refresh()
+
+            for offset in range(-shake_weight, 0, 1):
+                self.display_round(round, offset)
+                self.refresh()
+
 
 def play_game(difficulty):
     lives = 3
@@ -166,7 +191,7 @@ def play_game(difficulty):
             drawer.fill_screen()
             drawer.display_text(directions.target_direction, GREY)
 
-            drawer.display_text(f'{turn}', position=(drawer.width - 50, 50))
+            drawer.display_text(f'{turn}', offset_x=320, offset_y=-200)
 
             # draw the ball in the proper place
             drawer.display_ball(ball_pos)
@@ -292,6 +317,72 @@ if __name__ == '__main__':
 
     gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
 
+    if not os.path.exists('.game_history'):
+        game_history = {}
+
+    else:
+        with open('.game_history', 'rt') as f:
+            print('loading json')
+            game_history = json.load(f)
+
 
     while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+
+        drawer.bgcolor = BLUE
+
+        # display rounds
+        display_rounds = True
+        level = 0
+        input_direction = None
+        while display_rounds:
+
+            drawer.display_round(level)
+            drawer.refresh()
+            print('At display rounds', input_direction)
+
+            pygame.event.get()
+            while (input_direction := gamepad.direction_input()) is None:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+
+                if not running:
+                    break
+
+            if not running:
+                break
+
+            if input_direction == 'LEFT':
+                if level == 0:
+                    drawer.shake_round(0)
+
+            if input_direction == 'RIGHT':
+                try:
+                    levels_beaten = max(game_history)
+                except ValueError:
+                    levels_beaten = -1
+
+                # display the next round
+                if level < levels_beaten:
+
+
+
+
+
+
+        if not running:
+            break
+
+            # drawer.display_round(0)
+            # drawer.display_text('Press A to start round', offset_y=180)
+            # drawer.refresh()
+
+
+
         play_game(0)
+        
+        
