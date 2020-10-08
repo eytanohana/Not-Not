@@ -90,11 +90,11 @@ class GameDrawer:
         return (self._timer_bounds.left < ball_pos[0] < self._timer_bounds.right
                 and self._timer_bounds.top < ball_pos[1] < self._timer_bounds.bottom)
 
-
-    def display_round(self, round, offset=0):
-        self.fill_screen()
+    def display_round(self, round, offset=0, fill_screen=True):
+        if fill_screen:
+            self.fill_screen()
         length = 250
-        rect = pygame.Rect((self.width - length)//2 + offset, (self.height - length)//2, length, length)
+        rect = pygame.Rect((self.width - length) // 2 + offset, (self.height - length) // 2, length, length)
         pygame.draw.rect(self.screen, BLACK, rect)
 
         self.display_text(f'ROUND {round}', WHITE, offset_x=offset)
@@ -113,6 +113,22 @@ class GameDrawer:
             for offset in range(-shake_weight, 0, 1):
                 self.display_round(round, offset)
                 self.refresh()
+
+    def switch_rounds(self, direction, level):
+        if direction > 0:
+            for offset in range(self.width//2):
+                self.fill_screen()
+                self.display_round(level, -offset, fill_screen=False)
+                self.display_round(level + 1, self.width - offset * 2, fill_screen=False)
+                self.refresh()
+
+        else:
+            for offset in range(self.width//2):
+                self.fill_screen()
+                self.display_round(level, offset, fill_screen=False)
+                self.display_round(level - 1, -self.width//2 + offset, fill_screen=False)
+                self.refresh()
+
 
 
 def play_game(difficulty):
@@ -297,7 +313,7 @@ def play_game(difficulty):
 
 if __name__ == '__main__':
     # Set up the drawer object
-    drawer = GameDrawer(800, 500, 'NOT NOT')
+    drawer = GameDrawer(700, 500, 'NOT NOT')
     # Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
     icon = pygame.image.load('exclamation-mark.png')
     pygame.display.set_icon(icon)
@@ -325,24 +341,29 @@ if __name__ == '__main__':
             print('loading json')
             game_history = json.load(f)
 
-
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
 
         drawer.bgcolor = BLUE
 
         # display rounds
         display_rounds = True
         level = 0
-        input_direction = None
-        while display_rounds:
 
+        game_history[1] = []
+
+        try:
+            levels_beaten = max(game_history)
+        except ValueError:
+            levels_beaten = -1
+
+        while display_rounds:
             drawer.display_round(level)
+            drawer.display_text('Press down to play', offset_y=180)
+            drawer.display_text('Press up to quit', offset_y=-180)
             drawer.refresh()
-            print('At display rounds', input_direction)
 
             pygame.event.get()
             while (input_direction := gamepad.direction_input()) is None:
@@ -357,32 +378,33 @@ if __name__ == '__main__':
                 break
 
             if input_direction == 'LEFT':
-                if level == 0:
+                if level <= 0:
                     drawer.shake_round(0)
+                else:
+                    drawer.switch_rounds(-1, level)
+                    level -= 1
 
             if input_direction == 'RIGHT':
-                try:
-                    levels_beaten = max(game_history)
-                except ValueError:
-                    levels_beaten = -1
+
 
                 # display the next round
                 if level < levels_beaten:
+                    drawer.switch_rounds(1, level)
+                    level += 1
+                else:
+                    drawer.shake_round(level)
 
+            # quit
+            if input_direction == 'UP':
+                running = False
+                break
 
-
-
-
+            if input_direction == 'DOWN':
+                difficulty = level
+                break
 
         if not running:
             break
 
-            # drawer.display_round(0)
-            # drawer.display_text('Press A to start round', offset_y=180)
-            # drawer.refresh()
 
-
-
-        play_game(0)
-        
-        
+        play_game(difficulty)
