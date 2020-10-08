@@ -130,6 +130,9 @@ class GameDrawer:
                 self.display_round(level - 1, -self.width//2 + offset, fill_screen=False)
                 self.refresh()
 
+    def display_arrow(self, arrow, pos):
+        self.screen.blit(arrow, pos)
+
 
 
 def play_game(difficulty):
@@ -315,7 +318,7 @@ def play_game(difficulty):
 
 if __name__ == '__main__':
     # Set up the drawer object
-    drawer = GameDrawer(700, 500, 'NOT NOT')
+    drawer = GameDrawer(800, 500, 'NOT NOT')
     # Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
     icon = pygame.image.load('exclamation-mark.png')
     pygame.display.set_icon(icon)
@@ -343,9 +346,11 @@ if __name__ == '__main__':
             print('loading json')
             game_history = json.load(f)
 
+    right_arrow = pygame.image.load('arrow-pointing-to-right.png')
+    left_arrow = pygame.image.load('arrow-pointing-to-left.png')
 
     game_history[3] = []
-    level = 0
+    level = 1
     try:
         levels_beaten = max(game_history)
     except ValueError:
@@ -363,9 +368,15 @@ if __name__ == '__main__':
 
 
         while display_rounds:
+
             drawer.display_round(level)
             drawer.display_text('Press down to play', offset_y=180)
             drawer.display_text('Press up to quit', offset_y=-180)
+
+            if level > 0:
+                drawer.display_arrow(left_arrow, (30, drawer.height//2-128//2))
+            if level < levels_beaten:
+                drawer.display_arrow(right_arrow, (drawer.width-128-30, drawer.height//2-128//2))
             drawer.refresh()
 
             pygame.event.get()
