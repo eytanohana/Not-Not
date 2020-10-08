@@ -31,7 +31,8 @@ class GameDrawer:
         self._bgcolor = BLUE
         self.screen = pygame.display.set_mode((width, height))
 
-        self._timer_bounds = pygame.Rect((self.width - 400) // 2, (self.height - 400) // 2, 400, 400)
+        length = 450
+        self._timer_bounds = pygame.Rect((self.width - length) // 2, (self.height - length) // 2, length, length)
         pygame.display.set_caption(caption)
 
     @property
@@ -292,13 +293,14 @@ def play_game(difficulty):
 
                 if input_direction == 'LEFT':
                     lives -= 1
-                    time.sleep(1)
+                    time.sleep(0.5)
+                    continue
 
-            else:
-                drawer.bgcolor = ORANGE
-                drawer.display_lose()
-                time.sleep(1)
-                return False
+            # End the game
+            drawer.bgcolor = ORANGE
+            drawer.display_lose()
+            time.sleep(1)
+            return False
 
 
     # The player completed the round successfully.
@@ -341,6 +343,14 @@ if __name__ == '__main__':
             print('loading json')
             game_history = json.load(f)
 
+
+    game_history[3] = []
+    level = 0
+    try:
+        levels_beaten = max(game_history)
+    except ValueError:
+        levels_beaten = -1
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -350,14 +360,7 @@ if __name__ == '__main__':
 
         # display rounds
         display_rounds = True
-        level = 0
 
-        game_history[1] = []
-
-        try:
-            levels_beaten = max(game_history)
-        except ValueError:
-            levels_beaten = -1
 
         while display_rounds:
             drawer.display_round(level)
@@ -408,3 +411,4 @@ if __name__ == '__main__':
 
 
         play_game(difficulty)
+        time.sleep(0.2)
