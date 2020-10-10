@@ -3,10 +3,9 @@ import json
 import time
 import os
 
-from modules.gamepad import NotNotController
-from modules.direction import Direction
-from modules.draw import *
-
+from gamepad import NotNotController
+from direction import Direction
+from draw import *
 
 speed = 0.015
 ball_speed = 14
@@ -17,25 +16,9 @@ def play_game(difficulty):
     directions = Direction(difficulty=difficulty)
     drawer.bgcolor = BLUE
     drawer.fill_screen()
-    ####################################################################
-    #                        Starting Countdown                        #
-    ####################################################################
-    for count_down in range(3, 0, -1):
-        # in radians 2pi, pi, 0
-        for angle in (a / 10 for a in range(63, -1, -1)):
-            if count_down == 2:
-                angle = -angle
-            # Color the screen
-            drawer.fill_screen()
-            # Draw the countdown
-            drawer.display_text(f'STARTING IN {count_down}', GREY)
-            # Draw the circular timer
-            drawer.display_timer(angle)
-            # Flip
-            drawer.refresh()
-            # 60 fps
-            clock.tick(60)
-    ###################################################################
+
+    # Starting Countdown
+    drawer.display_countdown(3, 'Starting in ')
 
     # ---------- Main Program Loop ------------
     lost = False
@@ -48,6 +31,7 @@ def play_game(difficulty):
                 drawer.display_option('use a life and continue?')
                 drawer.display_lives(lives)
                 drawer.refresh()
+
                 while (input_direction := gamepad.direction_input()) is None:
                     pygame.event.get()
 
@@ -93,7 +77,7 @@ def play_game(difficulty):
             # draw the ball in the proper place
             drawer.display_ball(ball_pos)
             drawer.display_lives(lives)
-            drawer.display_timer(angle)
+            drawer.display_timer(stop_angle=angle)
             drawer.refresh()
 
             # If the ball reached the end.

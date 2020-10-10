@@ -25,6 +25,8 @@ class GameDrawer:
         self._timer_bounds = pygame.Rect((self.width - length) // 2, (self.height - length) // 2, length, length)
         pygame.display.set_caption(caption)
 
+        self.clock = pygame.time.Clock()
+
     @property
     def font(self):
         return self._font
@@ -51,8 +53,8 @@ class GameDrawer:
     def display_ball(self, position, color=WHITE, radius=5):
         pygame.draw.circle(self.screen, color, position, radius)
 
-    def display_timer(self, angle, color=WHITE, width=5):
-        pygame.draw.arc(self.screen, color, self._timer_bounds, 0, angle, width)
+    def display_timer(self, start_angle=0, stop_angle=0, color=WHITE, width=5):
+        pygame.draw.arc(self.screen, color, self._timer_bounds, start_angle, stop_angle, width)
 
     def display_text(self, text, color=BLACK, offset_x=0, offset_y=0):
         text = self.font.render(text, True, color)
@@ -72,6 +74,32 @@ class GameDrawer:
         self.fill_screen()
         self.display_text('YOU LOST')
         self.refresh()
+
+    def display_countdown(self, rounds, text):
+        for count_down in range(rounds, 0, -1):
+            # in radians 2pi, pi, 0
+            if count_down % 2 == 0:
+                print('AHHHH')
+                start_angle = 0
+                stop_angle = 63
+                step = 1
+            else:
+                start_angle = 0
+                stop_angle = 63
+                step = 1
+
+            for angle in (a / 10 for a in range(0, 63, 1)):
+
+                # Color the screen
+                self.fill_screen()
+                # Draw the countdown
+                self.display_text(text + str(count_down), GREY)
+                # Draw the circular timer
+                self.display_timer(angle-1, angle)
+                # Flip
+                self.refresh()
+                # 60 fps
+                self.clock.tick(60)
 
     def display_lives(self, lives):
         for i in range(lives):
