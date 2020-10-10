@@ -8,6 +8,9 @@ WHITE = (255,) * 3
 GREY = (77,) * 3
 GREEN = (11, 212, 51)
 ORANGE = (230, 163, 48)
+GOLD = (255, 215, 0)
+BRONZE = (205, 127, 50)
+SILVER = (192, 192, 192)
 
 class GameDrawer:
 
@@ -78,15 +81,6 @@ class GameDrawer:
     def display_countdown(self, rounds, text):
         for count_down in range(rounds, 0, -1):
             # in radians 2pi, pi, 0
-            if count_down % 2 == 0:
-                print('AHHHH')
-                start_angle = 0
-                stop_angle = 63
-                step = 1
-            else:
-                start_angle = 0
-                stop_angle = 63
-                step = 1
 
             for angle in (a / 10 for a in range(0, 63, 1)):
 
@@ -110,43 +104,50 @@ class GameDrawer:
         return (self._timer_bounds.left + padding < ball_pos[0] < self._timer_bounds.right - padding
                 and self._timer_bounds.top + padding < ball_pos[1] < self._timer_bounds.bottom - padding)
 
-    def display_round(self, round, offset=0, fill_screen=True):
+    def display_round(self, round, round_color=BLACK, text_color=WHITE, offset=0, fill_screen=True):
         if fill_screen:
             self.fill_screen()
         length = 250
         rect = pygame.Rect((self.width - length) // 2 + offset, (self.height - length) // 2, length, length)
-        pygame.draw.rect(self.screen, BLACK, rect)
+        pygame.draw.rect(self.screen, round_color, rect)
 
-        self.display_text(f'ROUND {round}', WHITE, offset_x=offset)
+        self.display_text(f'ROUND {round}', text_color, offset_x=offset)
 
-    def shake_round(self, round):
+    def shake_round(self, round, round_color=BLACK, text_color=WHITE):
         shake_weight = 20
         for i in range(3):
             for offset in range(shake_weight):
-                self.display_round(round, offset)
+                self.display_round(round, round_color=round_color, text_color=text_color, offset=offset)
                 self.refresh()
 
             for offset in range(shake_weight, -shake_weight, -1):
-                self.display_round(round, offset)
+                self.display_round(round, round_color=round_color, text_color=text_color, offset=offset)
                 self.refresh()
 
             for offset in range(-shake_weight, 0, 1):
-                self.display_round(round, offset)
+                self.display_round(round, round_color=round_color, text_color=text_color, offset=offset)
                 self.refresh()
 
-    def switch_rounds(self, direction, level):
+    def switch_rounds(self, direction, level, round_color=BLACK, text_color=WHITE):
+
+        if isinstance(round_color, list):
+            round_color, next_round_color = round_color
+        else:
+            next_round_color = BLACK
+
         if direction > 0:
+
             for offset in range(self.width//2):
                 self.fill_screen()
-                self.display_round(level, -offset, fill_screen=False)
-                self.display_round(level + 1, self.width - offset * 2, fill_screen=False)
+                self.display_round(level, round_color=round_color, text_color=text_color, offset=-offset, fill_screen=False)
+                self.display_round(level + 1, round_color=next_round_color, offset=self.width - offset * 2, fill_screen=False)
                 self.refresh()
 
         else:
             for offset in range(self.width//2):
                 self.fill_screen()
-                self.display_round(level, offset, fill_screen=False)
-                self.display_round(level - 1, -self.width//2 + offset, fill_screen=False)
+                self.display_round(level, round_color=round_color, text_color=text_color, offset=offset, fill_screen=False)
+                self.display_round(level - 1, round_color=next_round_color, text_color=text_color, offset=-self.width//2 + offset, fill_screen=False)
                 self.refresh()
 
     def display_arrow(self, arrow, pos):

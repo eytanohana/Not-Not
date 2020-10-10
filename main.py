@@ -1,5 +1,6 @@
 import pygame
 import json
+import pickle
 import time
 import os
 
@@ -10,8 +11,23 @@ from draw import *
 speed = 0.015
 ball_speed = 14
 
+score_colors = {
+    -1: GREY,
+    0: BLACK,
+    1: BRONZE,
+    2: SILVER,
+    3: GOLD
+}
+
 
 def play_game(difficulty):
+    '''
+    Simulate a game a a certain difficulty.
+
+    If the player won the function returns the number
+    of lives the player had left: 3, 2, 1, 0.
+    The function returns -1 if the player lost.
+    '''
     lives = 3
     directions = Direction(difficulty=difficulty)
     drawer.bgcolor = BLUE
@@ -42,13 +58,13 @@ def play_game(difficulty):
 
                 else:
                     print('round lost')
-                    return False
+                    return -1
 
             else:
                 drawer.bgcolor = ORANGE
                 drawer.display_lose()
                 time.sleep(1)
-                return False
+                return -1
 
         # User did something.
         for event in pygame.event.get():
@@ -164,7 +180,7 @@ def play_game(difficulty):
             drawer.bgcolor = ORANGE
             drawer.display_lose()
             time.sleep(1)
-            return False
+            return -1
 
 
     # The player completed the round successfully.
@@ -174,7 +190,7 @@ def play_game(difficulty):
         drawer.display_text('Congratulations', WHITE)
         drawer.refresh()
         time.sleep(2)
-        return True
+        return lives
 
 
 if __name__ == '__main__':
@@ -203,43 +219,51 @@ if __name__ == '__main__':
         game_history = {}
 
     else:
-        with open('.game_history', 'rt') as f:
-            print('loading json')
-            game_history = json.load(f)
+        with open('.game_history', 'rb') as f:
+            game_history = pickle.load(f)
+            print(game_history)
 
     right_arrow = pygame.image.load('arrow-pointing-to-right.png')
     left_arrow = pygame.image.load('arrow-pointing-to-left.png')
 
-    game_history[3] = []
-    level = 1
-    try:
-        levels_beaten = max(game_history)
-    except ValueError:
-        levels_beaten = -1
 
+    level = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
+        try:
+            levels_beaten = max(game_history)
+        except ValueError:
+            levels_beaten = -1
+
         drawer.bgcolor = BLUE
 
-        # display rounds
+        ########################################################
+        #              Display Available Levels                #
+        ########################################################
         display_rounds = True
-
 
         while display_rounds:
 
-            drawer.display_round(level)
+            score_at_level = game_history.get(level, -1)
+            round_color = score_colors[score_at_level]
+
+            drawer.display_round(level, round_color=round_color)
             drawer.display_text('Press down to play', offset_y=180)
             drawer.display_text('Press up to quit', offset_y=-180)
 
+            # display left/right arrows
             if level > 0:
-                drawer.display_arrow(left_arrow, (30, drawer.height//2-128//2))
-            if level < levels_beaten:
-                drawer.display_arrow(right_arrow, (drawer.width-128-30, drawer.height//2-128//2))
+                drawer.display_arrow(left_arrow, (30, drawer.height // 2 - 128 // 2))
+                left_round_color = score_colors.get(game_history.get(level-1, -1))
+            if level <= levels_beaten:
+                drawer.display_arrow(right_arrow, (drawer.width - 128 - 30, drawer.height // 2 - 128 // 2))
+                right_round_color = score_colors.get(game_history.get(level+1, -1))
             drawer.refresh()
 
+            # get user input
             pygame.event.get()
             while (input_direction := gamepad.direction_input()) is None:
                 for event in pygame.event.get():
@@ -254,17 +278,15 @@ if __name__ == '__main__':
 
             if input_direction == 'LEFT':
                 if level <= 0:
-                    drawer.shake_round(0)
+                    drawer.shake_round(0, round_color=round_color)
                 else:
-                    drawer.switch_rounds(-1, level)
+                    drawer.switch_rounds(-1, level, round_color=[round_color, left_round_color])
                     level -= 1
 
             if input_direction == 'RIGHT':
-
-
                 # display the next round
-                if level < levels_beaten:
-                    drawer.switch_rounds(1, level)
+                if level <= levels_beaten:
+                    drawer.switch_rounds(1, level, round_color=[round_color, right_round_color])
                     level += 1
                 else:
                     drawer.shake_round(level)
@@ -278,9 +300,20 @@ if __name__ == '__main__':
                 difficulty = level
                 break
 
+        ########################################################
+        #               End Displaying Rounds                  #
+        ########################################################
         if not running:
             break
 
+        won = play_game(difficulty)
+        if won == -1:
+            print(f'Game {difficulty} lost')
+        else:
+            print(f'Game {difficulty} won using {3 - won} lives.')
+            if game_history.get(difficulty, -1) < won:
+                game_history[difficulty] = won
+                with open('.game_history', 'wb') as f:
+                    pickle.dump(game_history, f)
 
-        play_game(difficulty)
         time.sleep(0.2)

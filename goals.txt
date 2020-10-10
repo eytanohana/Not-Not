@@ -1,6 +1,5 @@
 My goals for the game in no particular order:
 
-- save game state
 - create user saves
 - display users + guest account
 - add union / intersection operations
