@@ -9,7 +9,7 @@ from direction import Direction
 from draw import *
 
 speed = 0.015
-ball_speed = 14
+ball_speed = 20
 
 score_colors = {
     -1: GREY,
