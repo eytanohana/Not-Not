@@ -4,9 +4,9 @@ import pickle
 import time
 import os
 
-from gamepad import NotNotController
-from direction import Direction
-from draw import *
+from modules.gamepad import NotNotController
+from modules.direction import Direction
+from modules.draw import *
 
 speed = 0.015
 ball_speed = 20
