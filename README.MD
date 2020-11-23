@@ -13,5 +13,5 @@ I built a Gamepad class that should be general enough to work with most controll
 
 Here is a gif of me playing the second hardest level currently.
 
-![](gameplay.gif)
+![](static/gameplay.gif)
 
