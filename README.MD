@@ -6,7 +6,7 @@ The most basic version of Not Not is needing to travel in the direction that gam
  
 The program is able to read commands from a USB controller. In my case I'm using a Logitech F310 Gamepad. 
 
-<img src="gamepad.JPG" alt="gamepad" width="60%"/>
+<img src="static/gamepad.JPG" alt="gamepad" width="60%"/>
 
 
 I built a Gamepad class that should be general enough to work with most controllers with slight modifications here and there.
