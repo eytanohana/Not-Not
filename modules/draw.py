@@ -15,6 +15,11 @@ class Colors:
 
 class GameDrawer:
 
+    WIDTH = 800
+    HEIGHT = 500
+
+    CAPTION = 'NOT NOT'
+
     def __init__(self, width, height, caption, font_name=None, font_size=60):
         self.width = width
         self.height = height
