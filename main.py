@@ -8,10 +8,10 @@ from modules.gamepad import NotNotController
 from modules.direction import Direction
 from modules.draw import *
 
-speed = 0.015
-ball_speed = 20
+SPEED = 0.015
+BALL_SPEED = 20
 
-score_colors = {
+SCORE_COLORS = {
     -1: Colors.GREY,
     0: Colors.BLACK,
     1: Colors.BRONZE,
@@ -82,7 +82,7 @@ def play_game(difficulty):
         drawer.bgcolor = Colors.BLUE
 
         for angle in (a / 10 for a in range(63, -1, -1)):
-            time.sleep(speed)
+            time.sleep(SPEED)
 
             # display the information
             drawer.fill_screen()
@@ -140,16 +140,16 @@ def play_game(difficulty):
             if input_direction is not None:
                 # update the balls position
                 if input_direction == 'LEFT':
-                    ball_pos[0] -= ball_speed
+                    ball_pos[0] -= BALL_SPEED
 
                 elif input_direction == 'RIGHT':
-                    ball_pos[0] += ball_speed
+                    ball_pos[0] += BALL_SPEED
 
                 elif input_direction == 'UP':
-                    ball_pos[1] -= ball_speed
+                    ball_pos[1] -= BALL_SPEED
 
                 else:
-                    ball_pos[1] += ball_speed
+                    ball_pos[1] += BALL_SPEED
 
         # The ball didn't reach the end.
         # The player was too slow and time ran out.
@@ -248,7 +248,7 @@ if __name__ == '__main__':
         while display_rounds:
 
             score_at_level = game_history.get(level, -1)
-            round_color = score_colors[score_at_level]
+            round_color = SCORE_COLORS[score_at_level]
 
             drawer.display_round(level, round_color=round_color)
             drawer.display_text('Press down to play', offset_y=180)
@@ -257,10 +257,10 @@ if __name__ == '__main__':
             # display left/right arrows
             if level > 0:
                 drawer.display_arrow(left_arrow, (30, drawer.height // 2 - 128 // 2))
-                left_round_color = score_colors.get(game_history.get(level-1, -1))
+                left_round_color = SCORE_COLORS.get(game_history.get(level - 1, -1))
             if level <= levels_beaten:
                 drawer.display_arrow(right_arrow, (drawer.width - 128 - 30, drawer.height // 2 - 128 // 2))
-                right_round_color = score_colors.get(game_history.get(level+1, -1))
+                right_round_color = SCORE_COLORS.get(game_history.get(level + 1, -1))
             drawer.refresh()
 
             # get user input
