@@ -12,11 +12,11 @@ speed = 0.015
 ball_speed = 20
 
 score_colors = {
-    -1: GREY,
-    0: BLACK,
-    1: BRONZE,
-    2: SILVER,
-    3: GOLD
+    -1: Colors.GREY,
+    0: Colors.BLACK,
+    1: Colors.BRONZE,
+    2: Colors.SILVER,
+    3: Colors.GOLD
 }
 
 
@@ -30,7 +30,7 @@ def play_game(difficulty):
     '''
     lives = 3
     directions = Direction(difficulty=difficulty)
-    drawer.bgcolor = BLUE
+    drawer.bgcolor = Colors.BLUE
     drawer.fill_screen()
 
     # Starting Countdown
@@ -61,7 +61,7 @@ def play_game(difficulty):
                     return -1
 
             else:
-                drawer.bgcolor = ORANGE
+                drawer.bgcolor = Colors.ORANGE
                 drawer.display_lose()
                 time.sleep(1)
                 return -1
@@ -79,14 +79,14 @@ def play_game(difficulty):
         prev_input_direction = None
         ball_pos = [drawer.width // 2, drawer.height // 2]
 
-        drawer.bgcolor = BLUE
+        drawer.bgcolor = Colors.BLUE
 
         for angle in (a / 10 for a in range(63, -1, -1)):
             time.sleep(speed)
 
             # display the information
             drawer.fill_screen()
-            drawer.display_text(directions.target_direction, GREY)
+            drawer.display_text(directions.target_direction, Colors.GREY)
 
             drawer.display_text(f'{turn}', offset_x=320, offset_y=-200)
 
@@ -107,7 +107,7 @@ def play_game(difficulty):
 
                 # The player chose wrong.
                 else:
-                    drawer.bgcolor = RED
+                    drawer.bgcolor = Colors.RED
                     drawer.fill_screen()
 
                     drawer.display_text("You chose wrong!")
@@ -155,7 +155,7 @@ def play_game(difficulty):
         # The player was too slow and time ran out.
         else:
 
-            drawer.bgcolor = RED
+            drawer.bgcolor = Colors.RED
             drawer.fill_screen()
             drawer.display_text('Out of Time! You were too slow.')
             drawer.display_lives(lives)
@@ -177,7 +177,7 @@ def play_game(difficulty):
                     continue
 
             # End the game
-            drawer.bgcolor = ORANGE
+            drawer.bgcolor = Colors.ORANGE
             drawer.display_lose()
             time.sleep(1)
             return -1
@@ -185,9 +185,9 @@ def play_game(difficulty):
 
     # The player completed the round successfully.
     else:
-        drawer.bgcolor = GREEN
+        drawer.bgcolor = Colors.GREEN
         drawer.fill_screen()
-        drawer.display_text('Congratulations', WHITE)
+        drawer.display_text('Congratulations', Colors.WHITE)
         drawer.refresh()
         time.sleep(2)
         return lives
@@ -238,7 +238,7 @@ if __name__ == '__main__':
         except ValueError:
             levels_beaten = -1
 
-        drawer.bgcolor = BLUE
+        drawer.bgcolor = Colors.BLUE
 
         ########################################################
         #              Display Available Levels                #

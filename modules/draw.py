@@ -1,16 +1,17 @@
 import pygame
 
 # Define some colors.
-BLACK = (0,) * 3
-RED = (255, 0, 0)
-BLUE = (12, 133, 127)
-WHITE = (255,) * 3
-GREY = (77,) * 3
-GREEN = (11, 212, 51)
-ORANGE = (230, 163, 48)
-GOLD = (255, 215, 0)
-BRONZE = (205, 127, 50)
-SILVER = (192, 192, 192)
+class Colors:
+    BLACK = (0,) * 3
+    RED = (255, 0, 0)
+    BLUE = (12, 133, 127)
+    WHITE = (255,) * 3
+    GREY = (77,) * 3
+    GREEN = (11, 212, 51)
+    ORANGE = (230, 163, 48)
+    GOLD = (255, 215, 0)
+    BRONZE = (205, 127, 50)
+    SILVER = (192, 192, 192)
 
 class GameDrawer:
 
@@ -21,7 +22,7 @@ class GameDrawer:
 
         pygame.init()
         self._font = pygame.font.SysFont(font_name, font_size)
-        self._bgcolor = BLUE
+        self._bgcolor = Colors.BLUE
         self.screen = pygame.display.set_mode((width, height))
 
         length = 450
@@ -53,13 +54,13 @@ class GameDrawer:
     def fill_screen(self):
         self.screen.fill(self._bgcolor)
 
-    def display_ball(self, position, color=WHITE, radius=5):
+    def display_ball(self, position, color=Colors.WHITE, radius=5):
         pygame.draw.circle(self.screen, color, position, radius)
 
-    def display_timer(self, start_angle=0, stop_angle=0, color=WHITE, width=5):
+    def display_timer(self, start_angle=0, stop_angle=0, color=Colors.WHITE, width=5):
         pygame.draw.arc(self.screen, color, self._timer_bounds, start_angle, stop_angle, width)
 
-    def display_text(self, text, color=BLACK, offset_x=0, offset_y=0):
+    def display_text(self, text, color=Colors.BLACK, offset_x=0, offset_y=0):
         text = self.font.render(text, True, color)
         text_rect = text.get_rect()
 
@@ -87,7 +88,7 @@ class GameDrawer:
                 # Color the screen
                 self.fill_screen()
                 # Draw the countdown
-                self.display_text(text + str(count_down), GREY)
+                self.display_text(text + str(count_down), Colors.GREY)
                 # Draw the circular timer
                 self.display_timer(angle-1, angle)
                 # Flip
@@ -97,14 +98,14 @@ class GameDrawer:
 
     def display_lives(self, lives):
         for i in range(lives):
-            pygame.draw.circle(self.screen, WHITE, (30 * (i + 1), 30), 10)
+            pygame.draw.circle(self.screen, Colors.WHITE, (30 * (i + 1), 30), 10)
 
     def ball_in_border(self, ball_pos):
         padding = 5
         return (self._timer_bounds.left + padding < ball_pos[0] < self._timer_bounds.right - padding
                 and self._timer_bounds.top + padding < ball_pos[1] < self._timer_bounds.bottom - padding)
 
-    def display_round(self, round, round_color=BLACK, text_color=WHITE, offset=0, fill_screen=True):
+    def display_round(self, round, round_color=Colors.BLACK, text_color=Colors.WHITE, offset=0, fill_screen=True):
         if fill_screen:
             self.fill_screen()
         length = 250
@@ -113,7 +114,7 @@ class GameDrawer:
 
         self.display_text(f'ROUND {round}', text_color, offset_x=offset)
 
-    def shake_round(self, round, round_color=BLACK, text_color=WHITE):
+    def shake_round(self, round, round_color=Colors.BLACK, text_color=Colors.WHITE):
         shake_weight = 20
         for i in range(3):
             for offset in range(shake_weight):
@@ -128,12 +129,12 @@ class GameDrawer:
                 self.display_round(round, round_color=round_color, text_color=text_color, offset=offset)
                 self.refresh()
 
-    def switch_rounds(self, direction, level, round_color=BLACK, text_color=WHITE):
+    def switch_rounds(self, direction, level, round_color=Colors.BLACK, text_color=Colors.WHITE):
 
         if isinstance(round_color, list):
             round_color, next_round_color = round_color
         else:
-            next_round_color = BLACK
+            next_round_color = Colors.BLACK
 
         if direction > 0:
 
