@@ -223,8 +223,8 @@ if __name__ == '__main__':
             game_history = pickle.load(f)
             print(game_history)
 
-    right_arrow = pygame.image.load('arrow-pointing-to-right.png')
-    left_arrow = pygame.image.load('arrow-pointing-to-left.png')
+    right_arrow = pygame.image.load('static/arrow-pointing-to-right.png')
+    left_arrow = pygame.image.load('static/arrow-pointing-to-left.png')
 
 
     level = 0
