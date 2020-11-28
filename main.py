@@ -21,13 +21,13 @@ score_colors = {
 
 
 def play_game(difficulty):
-    '''
+    """
     Simulate a game a a certain difficulty.
 
     If the player won the function returns the number
     of lives the player had left: 3, 2, 1, 0.
     The function returns -1 if the player lost.
-    '''
+    """
     lives = 3
     directions = Direction(difficulty=difficulty)
     drawer.bgcolor = Colors.BLUE
