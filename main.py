@@ -197,7 +197,7 @@ if __name__ == '__main__':
     # Set up the drawer object
     drawer = GameDrawer(800, 500, 'NOT NOT')
     # Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
-    icon = pygame.image.load('exclamation-mark.png')
+    icon = pygame.image.load('static/exclamation-mark.png')
     pygame.display.set_icon(icon)
 
     # flags
