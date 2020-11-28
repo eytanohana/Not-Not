@@ -213,7 +213,13 @@ if __name__ == '__main__':
     with open('logitechF310-mappings.json', 'rt') as f:
         gamepad_settings = json.load(f)
 
-    gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
+    while True:
+        try:
+            gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
+            break
+        except pygame.error as e:
+            print('Please connect a controller')
+            time.sleep(5)
 
     if not os.path.exists('.game_history'):
         game_history = {}
