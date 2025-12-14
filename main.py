@@ -16,7 +16,7 @@ score_colors = {
     0: Colors.BLACK,
     1: Colors.BRONZE,
     2: Colors.SILVER,
-    3: Colors.GOLD
+    3: Colors.GOLD,
 }
 
 
@@ -98,7 +98,6 @@ def play_game(difficulty):
 
             # If the ball reached the end.
             if not drawer.ball_in_border(ball_pos):
-
                 # The player chose correct.
                 if directions.correct_direction(input_direction):
                     # Leave the for; go on to the next turn.
@@ -110,7 +109,7 @@ def play_game(difficulty):
                     drawer.bgcolor = Colors.RED
                     drawer.fill_screen()
 
-                    drawer.display_text("You chose wrong!")
+                    drawer.display_text('You chose wrong!')
                     drawer.display_lives(lives)
                     drawer.refresh()
                     time.sleep(0.3)
@@ -154,7 +153,6 @@ def play_game(difficulty):
         # The ball didn't reach the end.
         # The player was too slow and time ran out.
         else:
-
             drawer.bgcolor = Colors.RED
             drawer.fill_screen()
             drawer.display_text('Out of Time! You were too slow.')
@@ -181,7 +179,6 @@ def play_game(difficulty):
             drawer.display_lose()
             time.sleep(1)
             return -1
-
 
     # The player completed the round successfully.
     else:
@@ -216,7 +213,7 @@ if __name__ == '__main__':
             gamepad_settings = json.load(f)
     except FileNotFoundError:
         print('Gamepad settings file not found. Using keyboard arrow keys only.')
-    
+
     # Try to initialize gamepad, but allow keyboard-only play
     if pygame.joystick.get_count() > 0:
         try:
@@ -240,7 +237,6 @@ if __name__ == '__main__':
     right_arrow = pygame.image.load('static/arrow-pointing-to-right.png')
     left_arrow = pygame.image.load('static/arrow-pointing-to-left.png')
 
-
     level = 0
     while running:
         for event in pygame.event.get():
@@ -260,7 +256,6 @@ if __name__ == '__main__':
         display_rounds = True
 
         while display_rounds:
-
             score_at_level = game_history.get(level, -1)
             round_color = score_colors[score_at_level]
 
@@ -271,10 +266,13 @@ if __name__ == '__main__':
             # display left/right arrows
             if level > 0:
                 drawer.display_arrow(left_arrow, (30, drawer.height // 2 - 128 // 2))
-                left_round_color = score_colors.get(game_history.get(level-1, -1))
+                left_round_color = score_colors.get(game_history.get(level - 1, -1))
             if level <= levels_beaten:
-                drawer.display_arrow(right_arrow, (drawer.width - 128 - 30, drawer.height // 2 - 128 // 2))
-                right_round_color = score_colors.get(game_history.get(level+1, -1))
+                drawer.display_arrow(
+                    right_arrow,
+                    (drawer.width - 128 - 30, drawer.height // 2 - 128 // 2),
+                )
+                right_round_color = score_colors.get(game_history.get(level + 1, -1))
             drawer.refresh()
 
             # get user input

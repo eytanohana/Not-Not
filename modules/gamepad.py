@@ -2,7 +2,6 @@ import pygame
 
 
 class Gamepad:
-
     def __init__(self, gamepad=None, settings=None):
         self.gamepad = gamepad
         self.settings = dict(settings) if settings else {}
@@ -89,26 +88,41 @@ class Gamepad:
 
 
 class NotNotController(Gamepad):
-
     def left(self):
         keys = pygame.key.get_pressed()
-        return (keys[pygame.K_LEFT] or self.dpad_left() or self.left_stick_left() or
-                self.right_stick_left() or self.is_pressed('X'))
+        return (
+            keys[pygame.K_LEFT]
+            or self.dpad_left()
+            or self.left_stick_left()
+            or self.right_stick_left()
+            or self.is_pressed('X')
+        )
 
     def right(self):
         keys = pygame.key.get_pressed()
-        return (keys[pygame.K_RIGHT] or self.dpad_right() or self.left_stick_right() or
-                self.right_stick_right() or self.is_pressed('B'))
+        return (
+            keys[pygame.K_RIGHT]
+            or self.dpad_right()
+            or self.left_stick_right()
+            or self.right_stick_right()
+            or self.is_pressed('B')
+        )
 
     def up(self):
         keys = pygame.key.get_pressed()
-        return (keys[pygame.K_UP] or self.dpad_up() or self.left_stick_up() or
-                self.right_stick_up() or self.is_pressed('Y'))
+        return (
+            keys[pygame.K_UP] or self.dpad_up() or self.left_stick_up() or self.right_stick_up() or self.is_pressed('Y')
+        )
 
     def down(self):
         keys = pygame.key.get_pressed()
-        return (keys[pygame.K_DOWN] or self.dpad_down() or self.left_stick_down() or
-                self.right_stick_down() or self.is_pressed('A'))
+        return (
+            keys[pygame.K_DOWN]
+            or self.dpad_down()
+            or self.left_stick_down()
+            or self.right_stick_down()
+            or self.is_pressed('A')
+        )
 
     def direction_input(self):
         if self.left():
