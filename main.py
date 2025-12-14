@@ -1,12 +1,13 @@
-import pygame
 import json
+import os
 import pickle
 import time
-import os
 
-from modules.gamepad import NotNotController
+import pygame
+
 from modules.direction import Direction
 from modules.draw import Colors, GameDrawer
+from modules.gamepad import NotNotController
 
 speed = 0.015
 ball_speed = 20
@@ -181,13 +182,12 @@ def play_game(difficulty):
             return -1
 
     # The player completed the round successfully.
-    else:
-        drawer.bgcolor = Colors.GREEN
-        drawer.fill_screen()
-        drawer.display_text('Congratulations', Colors.WHITE)
-        drawer.refresh()
-        time.sleep(2)
-        return lives
+    drawer.bgcolor = Colors.GREEN
+    drawer.fill_screen()
+    drawer.display_text('Congratulations', Colors.WHITE)
+    drawer.refresh()
+    time.sleep(2)
+    return lives
 
 
 if __name__ == '__main__':
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     # Gamepad settings - try to load, but allow keyboard-only play
     gamepad_settings = {}
     try:
-        with open('logitechF310-mappings.json', 'rt') as f:
+        with open('logitechF310-mappings.json') as f:
             gamepad_settings = json.load(f)
     except FileNotFoundError:
         print('Gamepad settings file not found. Using keyboard arrow keys only.')
