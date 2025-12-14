@@ -6,7 +6,7 @@ import os
 
 from modules.gamepad import NotNotController
 from modules.direction import Direction
-from modules.draw import *
+from modules.draw import Colors, GameDrawer
 
 speed = 0.015
 ball_speed = 20
