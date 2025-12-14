@@ -209,17 +209,25 @@ if __name__ == '__main__':
     # Initialize the joysticks.
     pygame.joystick.init()
 
-    # Gamepad settings
-    with open('logitechF310-mappings.json', 'rt') as f:
-        gamepad_settings = json.load(f)
-
-    while True:
+    # Gamepad settings - try to load, but allow keyboard-only play
+    gamepad_settings = {}
+    try:
+        with open('logitechF310-mappings.json', 'rt') as f:
+            gamepad_settings = json.load(f)
+    except FileNotFoundError:
+        print('Gamepad settings file not found. Using keyboard arrow keys only.')
+    
+    # Try to initialize gamepad, but allow keyboard-only play
+    if pygame.joystick.get_count() > 0:
         try:
             gamepad = NotNotController(pygame.joystick.Joystick(0), gamepad_settings)
-            break
-        except pygame.error as e:
-            print('Please connect a controller')
-            time.sleep(5)
+            print('Gamepad connected. You can use gamepad or arrow keys.')
+        except Exception as e:
+            print(f'Error initializing gamepad: {e}. Using keyboard arrow keys only.')
+            gamepad = NotNotController(None, gamepad_settings)
+    else:
+        print('No gamepad detected. Using keyboard arrow keys.')
+        gamepad = NotNotController(None, gamepad_settings)
 
     if not os.path.exists('.game_history'):
         game_history = {}
