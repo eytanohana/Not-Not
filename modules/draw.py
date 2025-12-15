@@ -1,5 +1,6 @@
 import pygame
 
+
 # Define some colors.
 class Colors:
     BLACK = (0,) * 3
@@ -13,8 +14,8 @@ class Colors:
     BRONZE = (205, 127, 50)
     SILVER = (192, 192, 192)
 
-class GameDrawer:
 
+class GameDrawer:
     def __init__(self, width, height, caption, font_name=None, font_size=60):
         self.width = width
         self.height = height
@@ -84,13 +85,12 @@ class GameDrawer:
             # in radians 2pi, pi, 0
 
             for angle in (a / 10 for a in range(0, 63, 1)):
-
                 # Color the screen
                 self.fill_screen()
                 # Draw the countdown
                 self.display_text(text + str(count_down), Colors.GREY)
                 # Draw the circular timer
-                self.display_timer(angle-1, angle)
+                self.display_timer(angle - 1, angle)
                 # Flip
                 self.refresh()
                 # 60 fps
@@ -102,14 +102,28 @@ class GameDrawer:
 
     def ball_in_border(self, ball_pos):
         padding = 5
-        return (self._timer_bounds.left + padding < ball_pos[0] < self._timer_bounds.right - padding
-                and self._timer_bounds.top + padding < ball_pos[1] < self._timer_bounds.bottom - padding)
+        return (
+            self._timer_bounds.left + padding < ball_pos[0] < self._timer_bounds.right - padding
+            and self._timer_bounds.top + padding < ball_pos[1] < self._timer_bounds.bottom - padding
+        )
 
-    def display_round(self, round, round_color=Colors.BLACK, text_color=Colors.WHITE, offset=0, fill_screen=True):
+    def display_round(
+        self,
+        round,
+        round_color=Colors.BLACK,
+        text_color=Colors.WHITE,
+        offset=0,
+        fill_screen=True,
+    ):
         if fill_screen:
             self.fill_screen()
         length = 250
-        rect = pygame.Rect((self.width - length) // 2 + offset, (self.height - length) // 2, length, length)
+        rect = pygame.Rect(
+            (self.width - length) // 2 + offset,
+            (self.height - length) // 2,
+            length,
+            length,
+        )
         pygame.draw.rect(self.screen, round_color, rect)
 
         self.display_text(f'ROUND {round}', text_color, offset_x=offset)
@@ -130,25 +144,46 @@ class GameDrawer:
                 self.refresh()
 
     def switch_rounds(self, direction, level, round_color=Colors.BLACK, text_color=Colors.WHITE):
-
         if isinstance(round_color, list):
             round_color, next_round_color = round_color
         else:
             next_round_color = Colors.BLACK
 
         if direction > 0:
-
-            for offset in range(self.width//2):
+            for offset in range(self.width // 2):
                 self.fill_screen()
-                self.display_round(level, round_color=round_color, text_color=text_color, offset=-offset, fill_screen=False)
-                self.display_round(level + 1, round_color=next_round_color, offset=self.width - offset * 2, fill_screen=False)
+                self.display_round(
+                    level,
+                    round_color=round_color,
+                    text_color=text_color,
+                    offset=-offset,
+                    fill_screen=False,
+                )
+                self.display_round(
+                    level + 1,
+                    round_color=next_round_color,
+                    offset=self.width - offset * 2,
+                    fill_screen=False,
+                )
                 self.refresh()
 
         else:
-            for offset in range(self.width//2):
+            for offset in range(self.width // 2):
                 self.fill_screen()
-                self.display_round(level, round_color=round_color, text_color=text_color, offset=offset, fill_screen=False)
-                self.display_round(level - 1, round_color=next_round_color, text_color=text_color, offset=-self.width//2 + offset, fill_screen=False)
+                self.display_round(
+                    level,
+                    round_color=round_color,
+                    text_color=text_color,
+                    offset=offset,
+                    fill_screen=False,
+                )
+                self.display_round(
+                    level - 1,
+                    round_color=next_round_color,
+                    text_color=text_color,
+                    offset=-self.width // 2 + offset,
+                    fill_screen=False,
+                )
                 self.refresh()
 
     def display_arrow(self, arrow, pos):

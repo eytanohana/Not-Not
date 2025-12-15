@@ -3,8 +3,8 @@ import random
 simple_directions = {'UP', 'DOWN', 'LEFT', 'RIGHT'}
 set_ops = {'AND', 'OR', ''}
 
-class Direction:
 
+class Direction:
     def __init__(self, difficulty=0):
         self.difficulty = difficulty
         self.target_direction = None
@@ -24,10 +24,8 @@ class Direction:
         self.target_direction = direction
         _, actual_directions = self.correct_direction(direction, return_dirs=True)
 
-
         if and_or == 'AND':
             pass
-
 
     def correct_direction(self, input_dir, return_dirs=False):
         components = self.target_direction.split(' ')
@@ -41,8 +39,6 @@ class Direction:
             if return_dirs:
                 return input_dir in simple_directions - {direction}, simple_directions - {direction}
             return input_dir in simple_directions - {direction}
-
-
 
     def __str__(self):
         return f'{self.target_direction}'
